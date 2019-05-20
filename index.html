@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<head>
+  <title>Socket.IO chat</title>
+  <style>
+    *{
+      margin: 0px;
+      padding: 0px;
+    }
+    .main{
+      width: 500px;
+      height: 650px;
+      background: darkgrey;
+      margin: 0 auto;
+      margin-top: 100px;
+    }
+    .head{
+      height: 30px;
+      text-align: center;
+      background: lightblue;
+    }
+
+    .chat{
+      height: 550px;
+      background: blanchedalmond;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /*对方消息*/
+    .chat .you_msg{
+      width: 100%;
+      height: 50px;
+      position: relative;
+      margin-bottom: 25px;
+    }
+    .chat h6{
+      position: absolute;
+      left: 60px;
+      margin-top: 3px;
+    }
+    .chat .you_msg img{
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      position: absolute;
+      top: 5px;
+      left: 5px;
+    }
+    .chat .you_msg div{
+      position: absolute;
+      left: 60px;
+      padding: 5px;
+      top: 25px;
+      background: white;
+      border-radius: 7px;
+    }
+    .chat .you_msg div span{
+      max-width: 60%;
+    }
+
+    /*我方消息*/
+    .chat .my_msg{
+      width: 100%;
+      height: 50px;
+      position: relative;
+      margin-bottom: 25px;
+    }
+    .chat .my_msg img{
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      position: absolute;
+      right: 10px;
+      top: 5px;
+    }
+    .chat .my_msg div{
+      position: absolute;
+      right: 60px;
+      padding: 5px;
+      top: 10px;
+      background: lawngreen;
+      border-radius: 7px;
+    }
+    .chat .my_msg div span{
+      max-width: 60%;
+    }
+
+    .send{
+      height: 70px;
+      background: lightgrey;
+      padding: 5px;
+    }
+    .send input{
+      width: 380px;
+      height: 50px;
+    }
+    .send button{
+      width: 100px;
+      height: 40px;
+    }
+  </style>
+</head>
+
+<body>
+<div class="main">
+  <div class="head">
+    <h3>即时聊天</h3>
+  </div>
+  <div class="chat">
+    <div class="you_msg">
+      <h6>MX巴赫</h6>
+      <div>
+        <span>hello</span>
+      </div>
+      <img src="/img/1.png" />
+    </div>
+
+    <div class="my_msg">
+      <img  src="/img/2.png" />
+      <div>
+        <span>hello world</span>
+      </div>
+    </div>
+
+  </div>
+  <div class="send">
+    <input type="text" name="msg" class="msg"/>
+    <button type="button">Send</button>
+  </div>
+</div>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+  var socket = io();
+  //获取我输入的消息
+  var my_message = '';
+  $('button').click(function(){
+    my_message = $('.msg').val();
+    //发送chat message事件，数据为用户输入的值
+    socket.emit('chat message', my_message);
+    //发送后清空输入框
+    $('.msg').val('');
+    return false;
+  });
+  //监听
+  socket.on('chat message', function(msg){
+    //判断是我发送的消息还是对方
+    if(my_message == msg){
+      my_msg(msg);
+      console.log('我的消息');
+    }else {
+      console.log('对方消息')
+      you_msg(msg);
+    }
+
+
+  });
+
+  //生成我的消息
+  function my_msg(msg){
+    var my_msg = document.createElement('div');
+    //设置属性
+    my_msg.setAttribute('class','my_msg');
+    $('.chat').append(my_msg);
+    var my_img = document.createElement('img');
+    my_img.setAttribute('src','/img/2.png');
+    my_msg.append(my_img);
+    var msg_div = document.createElement('div');
+    my_msg.append(msg_div);
+    var div_span = document.createElement('span');
+    div_span.innerText=msg;
+    msg_div.append(div_span);
+  }
+
+  //生成对方消息
+  function you_msg(msg){
+    var h6 = document.createElement('h6');
+    h6.innerText = 'mx巴赫';
+    $('.chat').append(h6);
+    var you_msg = document.createElement('div');
+    //设置属性
+    you_msg.setAttribute('class','you_msg');
+    $('.chat').append(you_msg);
+    var my_img = document.createElement('img');
+    my_img.setAttribute('src','/img/2.png');
+    you_msg.append(my_img);
+    var msg_div = document.createElement('div');
+    you_msg.append(msg_div);
+    var div_span = document.createElement('span');
+    div_span.innerText=msg;
+    msg_div.append(div_span);
+  }
+
+</script>
+</html>
